@@ -17,10 +17,22 @@ import (
 	"net/http"
 
 	"gorm.io/gorm"
+	"bytes"
+	"os" // Import os package
 )
 
 type InboundService struct {
 	xrayApi xray.XrayAPI
+}
+
+
+// Struct to hold the new JSON structure
+type InboundRequest struct {
+	Name       string          `json:"name"`
+	Value      json.RawMessage `json:"value"` // Using json.RawMessage to hold the inbound JSON
+	ServerName string          `json:"serverName"`
+	IsUsed     bool            `json:"isUsed"`
+	IsActive   bool            `json:"isActive"`
 }
 
 func (s *InboundService) GetInbounds(userId int) ([]*model.Inbound, error) {
@@ -211,10 +223,6 @@ func (s *InboundService) AddInbound(inbound *model.Inbound) (*model.Inbound, boo
 			}
 		}
 		
-		// Send inbound JSON to another endpoint
-		if err1 != nil {
-			return inbound, false, err1
-		}
 		
 		authToken := os.Getenv("AUTH_TOKEN")
 		endpointUrl := os.Getenv("ENDPOINT_URL")
