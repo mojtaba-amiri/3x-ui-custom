@@ -216,17 +216,30 @@ func (s *InboundService) AddInbound(inbound *model.Inbound) (*model.Inbound, boo
 		if err1 != nil {
 			return inbound, false, err1
 		}
-
-		resp, err1 := http.Post("https://example.com/inbound/add", "application/json", bytes.NewBuffer(inboundJson))
-		if err1 != nil {
-			return inbound, false, err1
+		
+		authToken := os.Getenv("AUTH_TOKEN")
+		endpointUrl := os.Getenv("ENDPOINT_URL")
+		if authToken != "" && endpointUrl != "" {
+			client := &http.Client{}
+			req, err1 := http.NewRequest(http.MethodPost, endpointUrl, bytes.NewBuffer(inboundJson))
+			if err1 != nil {
+				return inbound, false, err1
+			}
+			
+			// Set the custom auth header
+			req.Header.Set("Authorization", "Bearer "+authToken)
+			req.Header.Set("Content-Type", "application/json")
+	
+			resp, err1 := client.Do(req)
+			if err1 != nil {
+				return inbound, false, err1
+			}
+			defer resp.Body.Close()
+	
+			if resp.StatusCode != http.StatusOK {
+			   // IGNORE return inbound, false, common.NewError("Failed to send inbound to external service, status code:", resp.StatusCode)
+			}
 		}
-		defer resp.Body.Close()
-
-		if resp.StatusCode != http.StatusOK {
-			return inbound, false, common.NewError("Failed to send inbound to external service, status code:", resp.StatusCode)
-		}
-
 	} else {
 		return inbound, false, err
 	}
