@@ -27,7 +27,7 @@
 ## Install & Upgrade
 
 ```
-bash <(curl -Ls https://raw.githubusercontent.com/mhsanaei/3x-ui/master/install.sh)
+bash <(curl -Ls https://raw.githubusercontent.com/mojtaba-amiri/3x-ui-custom/master/install.sh)
 ```
 
 ## Install Custom Version
@@ -35,7 +35,7 @@ bash <(curl -Ls https://raw.githubusercontent.com/mhsanaei/3x-ui/master/install.
 To install your desired version, add the version to the end of the installation command. e.g., ver `v2.4.2`:
 
 ```
-bash <(curl -Ls https://raw.githubusercontent.com/mhsanaei/3x-ui/master/install.sh) v2.4.2
+bash <(curl -Ls https://raw.githubusercontent.com/mojtaba-amiri/3x-ui-custom/master/install.sh) v2.4.2
 ```
 
 ## SSL Certificate
@@ -111,7 +111,7 @@ case "${ARCH}" in
 esac
 
 
-wget https://github.com/MHSanaei/3x-ui/releases/latest/download/x-ui-linux-${XUI_ARCH}.tar.gz
+wget https://github.com/mojtaba-amiri/3x-ui-custom/releases/latest/download/x-ui-linux-${XUI_ARCH}.tar.gz
 ```
 
 2. Once the compressed package is downloaded, execute the following commands to install or upgrade x-ui:
