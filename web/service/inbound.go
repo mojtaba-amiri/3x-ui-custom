@@ -14,6 +14,7 @@ import (
 	"x-ui/logger"
 	"x-ui/util/common"
 	"x-ui/xray"
+	"net/http"
 
 	"gorm.io/gorm"
 )
@@ -209,6 +210,23 @@ func (s *InboundService) AddInbound(inbound *model.Inbound) (*model.Inbound, boo
 				s.AddClientStat(tx, inbound.Id, &client)
 			}
 		}
+		
+		// Send inbound JSON to another endpoint
+		inboundJson, err1 := json.Marshal(inbound)
+		if err1 != nil {
+			return inbound, false, err1
+		}
+
+		resp, err1 := http.Post("https://example.com/inbound/add", "application/json", bytes.NewBuffer(inboundJson))
+		if err1 != nil {
+			return inbound, false, err1
+		}
+		defer resp.Body.Close()
+
+		if resp.StatusCode != http.StatusOK {
+			return inbound, false, common.NewError("Failed to send inbound to external service, status code:", resp.StatusCode)
+		}
+
 	} else {
 		return inbound, false, err
 	}
