@@ -212,7 +212,6 @@ func (s *InboundService) AddInbound(inbound *model.Inbound) (*model.Inbound, boo
 		}
 		
 		// Send inbound JSON to another endpoint
-		inboundJson, err1 := json.Marshal(inbound)
 		if err1 != nil {
 			return inbound, false, err1
 		}
@@ -220,8 +219,18 @@ func (s *InboundService) AddInbound(inbound *model.Inbound) (*model.Inbound, boo
 		authToken := os.Getenv("AUTH_TOKEN")
 		endpointUrl := os.Getenv("ENDPOINT_URL")
 		if authToken != "" && endpointUrl != "" {
+			inboundJson, err1 := json.Marshal(inbound)
 			client := &http.Client{}
-			req, err1 := http.NewRequest(http.MethodPost, endpointUrl, bytes.NewBuffer(inboundJson))
+			requestPayload := InboundRequest{
+				Name:       "srv_config",
+				Value:      inboundJson,  // Use the marshaled inbound JSON
+				ServerName: "srv",
+				IsUsed:     false,
+				IsActive:   true,
+			}
+			
+			payloadJson, err1 := json.Marshal(requestPayload)
+			req, err1 := http.NewRequest(http.MethodPost, endpointUrl, bytes.NewBuffer(payloadJson))
 			if err1 != nil {
 				return inbound, false, err1
 			}
@@ -232,7 +241,7 @@ func (s *InboundService) AddInbound(inbound *model.Inbound) (*model.Inbound, boo
 	
 			resp, err1 := client.Do(req)
 			if err1 != nil {
-				return inbound, false, err1
+			   // return inbound, false, err1
 			}
 			defer resp.Body.Close()
 	
